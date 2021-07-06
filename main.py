@@ -10,8 +10,7 @@ from joblib import Parallel, delayed
 VERBOSE = True
 SETTING = False
 
-sudoku_possibilities = [[set(range(1, 10)) for col in range(9)] for row in range(9)]
-sudoku_convolution = [
+clues_convolution = [
     [  18, None, None,   None, None, None,   None, None, None],
     [None, None, None,     11, None, None,   None, None, None],
     [None, None,    0,   None, None, None,   None, None, None],
@@ -23,19 +22,6 @@ sudoku_convolution = [
     [None, None,    0,   None,  -28, None,   None, None, None],
     [None, None, None,   None, None, None,   None, None, None],
     [ -12, None, None,   None, None, None,   None, None,   18],
-]
-sudoku_definite = [
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
-
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
-
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
-    [None, None, None,   None, None, None,   None, None, None],
 ]
 
 
@@ -284,14 +270,14 @@ def main():
             cs.check_tuples()
 
     sudoku = ConvolutedSudoku()
-    run_until_no_change(sudoku, sudoku_convolution)
+    run_until_no_change(sudoku, clues_convolution)
     while SETTING:
         sudoku.print()
         row = int(input("Which row would you like to investigate? "))
         col = int(input(f"Which column of row {row} would you like to investigate? "))
 
         def test_value(n: int):
-            test_convolution = copy.deepcopy(sudoku_convolution)
+            test_convolution = copy.deepcopy(clues_convolution)
             test_convolution[row][col] = n
             try:
                 test_sudoku = ConvolutedSudoku()
@@ -304,12 +290,12 @@ def main():
         allowed_values = [value for value, allow in zip(range(-29, 30), allowed) if allow]
         val = input(f"The allowed values for cell ({row}, {col}) are {allowed_values}. Which of these would you like to use? ")
         try:
-            sudoku_convolution[row][col] = int(val)
+            clues_convolution[row][col] = int(val)
             print(f"Using {int(val)} for cell ({row}, {col})...")
         except ValueError:
             continue
         sudoku = ConvolutedSudoku()
-        run_until_no_change(sudoku, sudoku_convolution)
+        run_until_no_change(sudoku, clues_convolution)
 
 
 
